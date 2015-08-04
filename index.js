@@ -1,3 +1,4 @@
+require('find-index/ponyfill');
 var fs = require('fs');
 var CallSite = require('./call-site');
 
@@ -74,17 +75,51 @@ var properties = {
 	}
 };
 
-function augmentError(error, transformer){
-	if( error && typeof error.stack === 'string' ){
-		var callSites = CallSite.parseStack(error.stack);
+function is(error){
+	return error && typeof error.stack === 'string';
+}
 
-		error.callSites = callSites;
-		Object.keys(properties).forEach(function(key){
-			Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(properties, key));
-		});
+function augmentError(error){
+	if( error && typeof error.stack === 'string' ){
+		// do once
+		if( false === 'callSites' in error ){
+			var callSites = CallSite.parseStack(error.stack);
+
+			error.callSites = callSites;
+			Object.keys(properties).forEach(function(key){
+				Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(properties, key));
+			});
+		}
 	}
 
 	return error;
 }
 
-module.exports = augmentError;
+function getCallSites(error){
+	return is(error) ? augmentError(error).callSites : [];
+}
+
+module.exports = {
+	is: is,
+
+	sliceIf: function(error, filter, bind){
+		var callSites = getCallSites(error);
+
+		if( callSites.length ){
+			var callSiteIndex = callSites.findIndex(filter, bind);
+			if( callSiteIndex !== -1 ){
+				error.callSites = callSites.slice(callSiteIndex);
+			}
+		}
+	},
+
+	excludeFile: function(error, file){
+		return this.sliceIf(error, function(callSite){
+			return callSite.getFileName() != file;
+		});
+	},
+
+	forEach: function(error, fn, bind){
+		getCallSites(error).forEach(fn, bind);
+	}
+};
