@@ -206,7 +206,7 @@ function parseEval(location){
 	return parts;
 }
 
-CallSite.parse = function(line){
+CallSite.parseLine = function(line){
 	var properties = {};
 
 	if( line.match(/^\s*[-]{4,}$/) ){
@@ -286,7 +286,11 @@ CallSite.parse = function(line){
 		}
 	}
 
-	return new this(properties);
+	return properties;
+};
+
+CallSite.parse = function(line){
+	return new this(this.parseLine(line));
 };
 
 CallSite.parseAll = function(lines){

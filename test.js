@@ -1,25 +1,10 @@
 var CallSite = require('./call-site');
 
-function exec(code){
-	eval(code);
-}
-
-var foo = {
-	exec: function(code){
-		eval(code);
-	}
+exports['at repl:1:1'] = function(test){
+	test.compare(CallSite.parseLine('at repl:1:1'), {
+		functionName: 'repl',
+		line: 1,
+		column: 1
+	});
 };
-
-var code1 = '\ncoucou;';
-var code2 = '\ncoucou;\n//# sourceURL=foo.js';
-var code3 = '\neval("\ncoucou");';
-var code4 = '\neval("throw new Error();//# sourceURL=bar.js");';
-
-try{
-	foo.exec(code1);
-}
-catch(e){
-	console.log(e.stack);
-	console.log(CallSite.parseError(e));
-}
 
