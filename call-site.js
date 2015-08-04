@@ -213,7 +213,7 @@ CallSite.parse = function(line){
 		properties.fileName = line;
 	}
 	else{
-		var lineMatch = line.match(/^\s+at\s+(?:([^ ]+)\s+)?\((.+)?\)$/);
+		var lineMatch = line.match(/^\s+at\s+(?:(.+)\s+)?\((.+)?\)$/);
 		if( lineMatch ){
 			var callNames = lineMatch[1];
 			var callLocation = lineMatch[2];
