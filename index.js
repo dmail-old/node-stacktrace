@@ -125,10 +125,11 @@ function install(error){
 
 module.exports = {
 	create: function(error){
-		StackTrace.create(error);
+		return StackTrace.create(error);
 	},
 
 	install: function(error){
 		install(error);
+		return error.stackTrace;
 	}
 };
