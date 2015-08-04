@@ -219,16 +219,23 @@ CallSite.parse = function(line){
 			var callLocation = lineMatch[2];
 
 			if( callNames ){
-				var names = callNames.match(/(\w+)?(?:\.(.+))?/);
+				var names = callNames.match(/^(\w+)?(?:\.([^\]]+)(?: \[as (.+)?\])?)?$/);
 
-				properties.functionName = callNames;
+				//properties.functionName = callNames;
 
-				properties.methodName = names[2];
-				if( properties.methodName ){
-					properties.typeName = names[1];
+				if( !names[2] && !names[3] ){
+					properties.functionName = callNames;
 				}
 				else{
-					properties.typeName = 'Object';
+					properties.methodName = names[2];
+					properties.functionName = names[3];
+
+					if( properties.methodName ){
+						properties.typeName = names[1];
+					}
+					else{
+						properties.typeName = 'Object';
+					}
 				}
 			}
 
@@ -285,9 +292,9 @@ CallSite.parse = function(line){
 CallSite.parseAll = function(lines){
 	return lines.map(function(line){
 		return this.parse(line);
-	}, this).filter(function(callSite){
+	}, this)/*.filter(function(callSite){
 		return Boolean(callSite);
-	});
+	})*/;
 };
 
 CallSite.parseStack = function(stack){
