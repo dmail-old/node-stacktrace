@@ -1,59 +1,30 @@
-require('find-index/ponyfill');
 var fs = require('fs');
 var CallSite = require('./call-site');
 
-function createCallSitesString(callSites){
-	return callSites.map(function(callSite){
-		return '\n\tat ' + String(callSite);
-	}).join('');
+function is(error){
+	return error && typeof error.stack === 'string';
 }
 
-function createErrorString(error){
-	var string = '';
-	var fileName = error.fileName;
+var StackTrace = {
+	constructor: function(error){
+		var callSites;
 
-	// Format the line from the original source code like node does
-	if( fileName ){
-		string+= '\n';
-		string+= fileName;
-
-		if( error.lineNumber ){
-			string+= ':' + error.lineNumber;
-			string+= '\n';
-
-			var filePath;
-			if( fileName.indexOf('file:///') === 0 ){
-				filePath = fileName.slice('file:///'.length);
-			}
-			else{
-				filePath = fileName;
-			}
-
-			if( fs.existsSync(filePath) ){
-				var code = fs.readFileSync(filePath, 'utf8');
-				var lineSource = code.split(/(?:\r\n|\r|\n)/)[error.lineNumber - 1];
-
-				if( lineSource ){
-					string+= lineSource;
-					if( error.columnNumber ){
-						string+= '\n' + new Array(error.columnNumber).join(' ') + '^';
-					}
-				}
-			}
+		if( is(error) ){
+			callSites = CallSite.parseStack(error.stack);
 		}
 		else{
-			string+= '\n';
+			callSites = [];
 		}
-	}
 
-	string+= error.name;
-	string+= ': ' + error.message;
-	string+= error.stack;
+		this.callSites = callSites;
+	},
 
-	return string;
-}
+	create: function(){
+		var stackTrace = Object.create(this);
+		stackTrace.constructor.apply(stackTrace, arguments);
+		return stackTrace;
+	},
 
-var properties = {
 	get fileName(){
 		return this.callSites[0] ? this.callSites[0].getFileName() : null;
 	},
@@ -66,60 +37,98 @@ var properties = {
 		return this.callSites[0] ? this.callSites[0].getColumnNumber() : null;
 	},
 
-	get stack(){
-		return createCallSitesString(this.callSites);
+	forEach: function(fn, bind){
+		this.callSites(fn, bind);
 	},
 
 	toString: function(){
-		return createErrorString(this);
+		return this.callSites.map(function(callSite){
+			return '\n\tat ' + String(callSite);
+		}).join('');
 	}
 };
 
-function is(error){
-	return error && typeof error.stack === 'string';
-}
+var fs = require('fs');
 
-function augmentError(error){
-	if( error && typeof error.stack === 'string' ){
-		// do once
-		if( false === 'callSites' in error ){
-			var callSites = CallSite.parseStack(error.stack);
+var properties = {
+	get fileName(){
+		return this.stackTrace.fileName;
+	},
 
-			error.callSites = callSites;
-			Object.keys(properties).forEach(function(key){
-				Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(properties, key));
-			});
+	get lineNumber(){
+		return this.stacktrace.lineNumber;
+	},
+
+	get columnNumber(){
+		return this.stackTrace.columnNumber;
+	},
+
+	get stack(){
+		return this.stackTrace.toString();
+	},
+
+	toString: function(){
+		var string = '';
+		var fileName = this.fileName, lineNumber = this.lineNumber, columnNumber = this.columnNumber;
+
+		// Format the line from the original source code like node does
+		if( fileName ){
+			string+= '\n';
+			string+= fileName;
+
+			if( lineNumber ){
+				string+= ':' + lineNumber;
+				string+= '\n';
+
+				var filePath;
+				if( fileName.indexOf('file:///') === 0 ){
+					filePath = fileName.slice('file:///'.length);
+				}
+				else{
+					filePath = fileName;
+				}
+
+				if( fs.existsSync(filePath) ){
+					var code = fs.readFileSync(filePath, 'utf8');
+					var lineSource = code.split(/(?:\r\n|\r|\n)/)[lineNumber - 1];
+
+					if( lineSource ){
+						string+= lineSource;
+						if( columnNumber ){
+							string+= '\n' + new Array(columnNumber).join(' ') + '^';
+						}
+					}
+				}
+			}
+			else{
+				string+= '\n';
+			}
 		}
+
+		string+= this.name;
+		string+= ': ' + this.message;
+		string+= this.stack;
+
+		return string;
 	}
+};
 
-	return error;
-}
+function install(error){
+	if( false === 'stackTrace' in error ){ // install once
+		error.stackTrace = StackTrace.create(error);
 
-function getCallSites(error){
-	return is(error) ? augmentError(error).callSites : [];
+		Object.keys(properties).forEach(function(key){
+			Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(properties, key));
+		});
+	}
 }
 
 module.exports = {
-	is: is,
-
-	sliceIf: function(error, filter, bind){
-		var callSites = getCallSites(error);
-
-		if( callSites.length ){
-			var callSiteIndex = callSites.findIndex(filter, bind);
-			if( callSiteIndex !== -1 ){
-				error.callSites = callSites.slice(callSiteIndex);
-			}
-		}
+	create: function(error){
+		StackTrace.create(error);
 	},
 
-	excludeFile: function(error, file){
-		return this.sliceIf(error, function(callSite){
-			return callSite.getFileName() != file;
-		});
-	},
-
-	forEach: function(error, fn, bind){
-		getCallSites(error).forEach(fn, bind);
+	install: function(error){
+		install(error);
 	}
 };
