@@ -1,0 +1,12 @@
+{
+	"name": "node-stacktrace",
+	"version": "0.0.3",
+	"description": "Help to manipulate error stack trace",
+	"dependencies": {
+
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dmail/test-module"
+	}
+}
