@@ -160,14 +160,20 @@ var CallSite = {
 CallSite.constructor.prototype = CallSite;
 CallSite = CallSite.constructor;
 
-function parseLocation(location){
-	var match = location.match(/^(.+):(\d+):(\d+)$/);
+function matchLocation(location){
+	return location.match(/^([^ ]+):(\d+):(\d+)$/);
+}
 
+function createLocationFromMatch(match){
 	return {
 		fileName: match[1],
 		line: parseInt(match[2], 10),
 		column: parseInt(match[3], 10)
 	};
+}
+
+function parseLocation(location){
+	return createLocationFromMatch(matchLocation(location));
 }
 
 function assignLocation(properties, location){
@@ -207,16 +213,20 @@ function parseEval(location){
 }
 
 CallSite.parseLine = function(line){
-	var properties = {};
+	var properties = {}, match;
 
 	if( line.match(/^\s*[-]{4,}$/) ){
 		properties.fileName = line;
 	}
 	else{
-		var lineMatch = line.match(/^\s+at\s+(?:(.+)\s+)?\((.+)?\)$/);
-		if( lineMatch ){
-			var callNames = lineMatch[1];
-			var callLocation = lineMatch[2];
+		line = line.replace(/^\s*at\s+/, '');
+
+		if( match = matchLocation(line) ){
+			assignLocation(properties, createLocationFromMatch(match));
+		}
+		else if( match = line.match(/^(?:(.+)\s+)?\((.+)?\)$/) ){
+			var callNames = match[1];
+			var callLocation = match[2];
 
 			if( callNames ){
 				var names = callNames.match(/^(\w+)?(?:\.([^\]]+)(?: \[as (.+)?\])?)?$/);
