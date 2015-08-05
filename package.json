@@ -1,6 +1,6 @@
 {
   "name": "node-stacktrace",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Help to manipulate error stack trace",
   "dependencies": {
     "@dmail/test-module": "*"
