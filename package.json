@@ -1,18 +1,16 @@
 {
-	"name": "node-stacktrace",
-	"version": "0.0.4",
-	"description": "Help to manipulate error stack trace",
-	"devDependencies": {
-		"@dmail/test-module": "git+https://github.com/dmail/test-module"
-	},
-	"dependencies": {
-
-	},
-	"scripts": {
-		"test": "node ./node_modules/@dmail/test-module ./test.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/dmail/node-stacktrace"
-	}
+  "name": "node-stacktrace",
+  "version": "0.0.5",
+  "description": "Help to manipulate error stack trace",
+  "devDependencies": {
+    "@dmail/test-module": "git+https://github.com/dmail/test-module"
+  },
+  "dependencies": {},
+  "scripts": {
+    "test": "node ./node_modules/@dmail/test-module ./test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dmail/node-stacktrace"
+  }
 }
