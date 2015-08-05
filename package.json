@@ -3,7 +3,7 @@
 	"version": "0.0.4",
 	"description": "Help to manipulate error stack trace",
 	"devDependencies": {
-		"@dmail/test-module": "*"
+		"@dmail/test-module": "git+https://github.com/dmail/test-module"
 	},
 	"dependencies": {
 
