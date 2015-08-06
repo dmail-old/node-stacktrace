@@ -38,7 +38,7 @@ var StackTrace = {
 	},
 
 	forEach: function(fn, bind){
-		this.callSites(fn, bind);
+		this.callSites.forEach(fn, bind);
 	},
 
 	toString: function(){
@@ -56,7 +56,7 @@ var properties = {
 	},
 
 	get lineNumber(){
-		return this.stacktrace.lineNumber;
+		return this.stackTrace.lineNumber;
 	},
 
 	get columnNumber(){
