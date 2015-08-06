@@ -165,8 +165,12 @@ function matchLocation(location){
 }
 
 function createLocationFromMatch(match){
+	var fileName = match[1];
+
+	if( fileName == '<anonymous>' ) fileName = null;
+
 	return {
-		fileName: match[1],
+		fileName: fileName,
 		line: parseInt(match[2], 10),
 		column: parseInt(match[3], 10)
 	};
@@ -224,7 +228,7 @@ CallSite.parseLine = function(line){
 		if( match = matchLocation(line) ){
 			assignLocation(properties, createLocationFromMatch(match));
 		}
-		else if( match = line.match(/^(?:(.+)\s+)?\((.+)?\)$/) ){
+		else if( match = line.match(/^(?:([^\(]+)\s+)?\((.+)?\)$/) ){
 			var callNames = match[1];
 			var callLocation = match[2];
 
