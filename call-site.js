@@ -233,6 +233,11 @@ CallSite.parseLine = function(line){
 			var callLocation = match[2];
 
 			if( callNames ){
+				if( callNames.indexOf('new ') === 0 ){
+					properties.fromConstructor = true;
+					callNames = callNames.slice('new '.length);
+				}
+
 				var names = callNames.match(/^(\w+)?(?:\.([^\]]+)(?: \[as (.+)?\])?)?$/);
 
 				//properties.functionName = callNames;
@@ -304,7 +309,17 @@ CallSite.parseLine = function(line){
 };
 
 CallSite.parse = function(line){
-	return new this(this.parseLine(line));
+	var properties;
+
+	try{
+		properties = this.parseLine(line);
+	}
+	catch(e){
+		console.warn('error parsing line', line);
+		properties = {};
+	}
+
+	return new this(properties);
 };
 
 CallSite.parseAll = function(lines){
