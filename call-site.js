@@ -216,6 +216,10 @@ function parseEval(location){
 	return parts;
 }
 
+CallSite.regexps = {
+	parts: /^(.+?) (?:\((.+)\))?$/
+};
+
 CallSite.parseLine = function(line){
 	var properties = {}, match;
 
@@ -228,7 +232,7 @@ CallSite.parseLine = function(line){
 		if( match = matchLocation(line) ){
 			assignLocation(properties, createLocationFromMatch(match));
 		}
-		else if( match = line.match(/^(?:([^\(]+)\s+)?\((.+)?\)$/) ){
+		else if( match = line.match(CallSite.regexps.parts) ){
 			var callNames = match[1];
 			var callLocation = match[2];
 
@@ -242,20 +246,26 @@ CallSite.parseLine = function(line){
 
 				//properties.functionName = callNames;
 
-				if( !names[2] && !names[3] ){
-					properties.functionName = callNames;
-				}
-				else{
-					properties.methodName = names[2];
-					properties.functionName = names[3];
-
-					if( properties.methodName ){
-						properties.typeName = names[1];
+				if( names ){
+					if( !names[2] && !names[3] ){
+						properties.functionName = callNames;
 					}
 					else{
-						properties.typeName = 'Object';
+						properties.methodName = names[2];
+						properties.functionName = names[3];
+
+						if( properties.methodName ){
+							if( properties.methodName === '(anonymous function)' ){
+								properties.methodName = null;
+							}
+
+							properties.typeName = names[1];
+						}
+						else{
+							properties.typeName = 'Object';
+						}
 					}
-				}
+				}				
 			}
 
 			if( callLocation ){
