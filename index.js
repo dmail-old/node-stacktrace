@@ -114,13 +114,19 @@ var properties = {
 };
 
 function install(error){
-	if( false === 'stackTrace' in error ){ // install once
-		error.stackTrace = StackTrace.create(error);
+	var stackTrace;
+
+	stackTrace = StackTrace.create(error);
+
+	if( is(error) && false === 'stackTrace' in error ){ // install once
+		error.stackTrace = stackTrace;
 
 		Object.keys(properties).forEach(function(key){
 			Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(properties, key));
 		});
 	}
+
+	return stackTrace;
 }
 
 module.exports = {
