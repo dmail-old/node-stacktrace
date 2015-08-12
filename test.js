@@ -64,6 +64,15 @@ var lines = [
 			methodName: null,
 			functionName: 'equal'
 		}
+	},
+	{
+		source: 'at null.<anonymous> (<anonymous>)',
+		site: 'at null.<anonymous>',
+		location: '<anonymous>',
+		parsed: {
+			methodName: null,
+			typeName: 'null'
+		}
 	}
 ];
 

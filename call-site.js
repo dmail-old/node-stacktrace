@@ -265,7 +265,11 @@ CallSite.parseLine = function(line){
 							properties.typeName = 'Object';
 						}
 					}
-				}				
+				}
+			}
+
+			if( callLocation === '<anonymous>' ){
+				callLocation = null;
 			}
 
 			if( callLocation ){
@@ -325,7 +329,7 @@ CallSite.parse = function(line){
 		properties = this.parseLine(line);
 	}
 	catch(e){
-		console.warn('error parsing line', line);
+		console.warn('error parsing line', line, e.stack);
 		properties = {};
 	}
 
