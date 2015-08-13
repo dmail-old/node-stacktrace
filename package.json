@@ -5,9 +5,11 @@
   "devDependencies": {
     "@dmail/test-module": "git+https://github.com/dmail/test-module"
   },
-  "dependencies": {},
+  "dependencies": {
+
+  },
   "scripts": {
-    "test": "node ./node_modules/@dmail/test-module ./test.js"
+    "test": "node ./node_modules/@dmail/test-module"
   },
   "repository": {
     "type": "git",
