@@ -1,5 +1,6 @@
 var CallSite = require('./call-site');
 
+
 var lines = [
 	{
 		source: 'at repl:1:1',
@@ -9,6 +10,16 @@ var lines = [
 			fileName: 'repl',
 			line: 1,
 			column: 1
+		}
+	},
+	{
+		source: 'at ensureEvaluated (file with space.js:2108:26)',
+		site: 'at ensureEvaluated',
+		location: 'file with space.js:2108:26',
+		parsed: {
+			functionName: 'ensureEvaluated',
+			line: 2108,
+			column: 26
 		}
 	},
 	{

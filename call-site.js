@@ -161,7 +161,7 @@ CallSite.constructor.prototype = CallSite;
 CallSite = CallSite.constructor;
 
 function matchLocation(location){
-	return location.match(/^([^ ]+):(\d+):(\d+)$/);
+	return location.match(/^(.+):(\d+):(\d+)$/);
 }
 
 function createLocationFromMatch(match){
