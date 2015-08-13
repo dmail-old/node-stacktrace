@@ -1,4 +1,4 @@
-# StackTrace
+# StackTrace [![npm version](https://badge.fury.io/js/node-stacktrace.svg)](http://badge.fury.io/js/node-stacktrace) [![Build Status](https://travis-ci.org/dmail/node-stacktrace.svg)](http://travis-ci.org/dmail/node-stacktrace)
 
 Parse stack from error and help to manipulate it
 
