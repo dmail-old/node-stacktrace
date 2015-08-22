@@ -78,6 +78,7 @@ var properties = {
 
 			if( lineNumber ){
 				string+= ':' + lineNumber;
+				if( columnNumber ) string+= ':' + columnNumber;
 				string+= '\n';
 
 				var filePath;
