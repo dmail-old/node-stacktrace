@@ -135,7 +135,6 @@ module.exports = {
 	},
 
 	install: function(error){
-		install(error);
-		return error.stackTrace;
+		return install(error);
 	}
 };
