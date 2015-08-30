@@ -9,6 +9,10 @@ var StackTrace = {
 	constructor: function(error){
 		var callSites;
 
+		if( typeof error === 'string' ){
+			error = {stack: error};
+		}
+
 		if( is(error) ){
 			callSites = CallSite.parseStack(error.stack);
 			this.name = error.name;
