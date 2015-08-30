@@ -11,6 +11,8 @@ var StackTrace = {
 
 		if( is(error) ){
 			callSites = CallSite.parseStack(error.stack);
+			this.name = error.name;
+			this.message = error.message;
 		}
 		else{
 			callSites = [];
@@ -42,7 +44,7 @@ var StackTrace = {
 	},
 
 	toString: function(){
-		return this.callSites.map(function(callSite){
+		return this.name + ': ' + this.message + this.callSites.map(function(callSite){
 			return '\n\tat ' + String(callSite);
 		}).join('');
 	}
@@ -106,8 +108,8 @@ var properties = {
 			}
 		}
 
-		string+= this.name;
-		string+= ': ' + this.message;
+		//string+= this.name;
+		//string+= ': ' + this.message;
 		string+= this.stack;
 
 		return string;
@@ -131,6 +133,8 @@ function install(error){
 }
 
 module.exports = {
+	properties: properties,
+
 	create: function(error){
 		return StackTrace.create(error);
 	},

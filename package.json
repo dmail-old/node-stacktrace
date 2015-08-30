@@ -2,12 +2,9 @@
   "name": "node-stacktrace",
   "version": "0.0.9",
   "description": "Help to manipulate error stack trace",
-  "devDependencies": {
-    "@dmail/test-module": "git+https://github.com/dmail/test-module"
-  },
   "dependencies": {},
   "scripts": {
-    "test": "node ./node_modules/@dmail/test-module"
+    "test": "test-module"
   },
   "repository": {
     "type": "git",
