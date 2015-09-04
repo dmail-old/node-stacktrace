@@ -1,6 +1,5 @@
 var CallSite = require('./call-site');
 
-
 var lines = [
 	{
 		source: 'at repl:1:1',
@@ -41,7 +40,7 @@ var lines = [
 			methodName: 'runBound',
 			functionName: 'eval',
 			fileName: 'domain.js',
-			line: 267, 
+			line: 267,
 			column: 12
 		}
 	},
@@ -87,7 +86,7 @@ var lines = [
 	}
 ];
 
-exports['parts regexp'] = function(test){
+export function parts(test){
 	var parsePart = function(line){
 		var match = line.source.match(CallSite.regexps.parts);
 
@@ -97,14 +96,14 @@ exports['parts regexp'] = function(test){
 	lines.forEach(function(line){
 		test.compareProperties(line, parsePart(line));
 	});
-};
+}
 
-exports['parsing line'] = function(test){
-	var parseLine = function(line){
+export function parseLine(test){
+	var parse = function(line){
 		return CallSite.parseLine(line.source);
 	};
 
 	lines.forEach(function(line){
-		test.compareProperties(parseLine(line), line.parsed);
+		test.compareProperties(parse(line), line.parsed);
 	});
-};
+}

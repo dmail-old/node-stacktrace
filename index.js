@@ -1,5 +1,5 @@
 var fs = require('fs');
-var CallSite = require('./call-site');
+var CallSite = require('./lib/call-site.js');
 
 function is(error){
 	return error && typeof error.stack === 'string';
@@ -14,15 +14,25 @@ var StackTrace = {
 		}
 
 		if( is(error) ){
-			callSites = CallSite.parseStack(error.stack);
+			this.callSites = CallSite.parseStack(error.stack);
 			this.name = error.name;
 			this.message = error.message;
+			/*
+			if( error.fileName ){
+				Object.defineProperty(this, 'fileName', {value: error.fileName});
+			}
+			if( error.lineNumber ){
+				this.lineNumber = error.lineNumber;
+				Object.defineProperty(this, 'lineNumber', {value: error.fileName});
+			}
+			if( error.columnNumber ){
+				this.columnNumber = error.columnNumber;
+			}
+			*/
 		}
 		else{
-			callSites = [];
+			this.callSites = [];
 		}
-
-		this.callSites = callSites;
 	},
 
 	create: function(){
@@ -34,6 +44,13 @@ var StackTrace = {
 	get fileName(){
 		return this.callSites[0] ? this.callSites[0].getFileName() : null;
 	},
+
+	/*
+	set fileName(value){
+		if( !this.calllSites[0] ) this.callSites[0] = CallSite.create();
+		this.calllSites[0].fileName = value;
+	},
+	*/
 
 	get lineNumber(){
 		return this.callSites[0] ? this.callSites[0].getLineNumber() : null;
