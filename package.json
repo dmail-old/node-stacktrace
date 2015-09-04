@@ -2,12 +2,6 @@
   "name": "node-stacktrace",
   "version": "0.0.9",
   "description": "Help to manipulate error stack trace",
-  "devDependencies": {
-
-  },
-  "dependencies": {
-
-  },
   "scripts": {
     "test": "test-module"
   },
