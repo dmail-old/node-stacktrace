@@ -1,4 +1,37 @@
-var CallSite = require('./call-site');
+var CallSite = require('../lib/call-site.js');
+
+function match(actual, expected){
+	var maxDifferencesLogged = 5;
+
+	if( actual != expected ){
+		var differences = Object.keys(expected).filter(function(key){
+			return actual[key] != expected[key];
+		});
+		var length = differences.length;
+
+		if( length ){
+			var message = 'actual has '+ length +' differences with expected : \n';
+			var diff = length - maxDifferencesLogged;
+
+			if( length > 5 ){
+				differences = differences.slice(5);
+			}
+
+			message+= differences.map(function(key){
+				return key + ': ' + actual[key] + ' != ' + expected[key];
+			}).slice(maxDifferencesLogged).join('\n');
+
+			if( length > maxDifferencesLogged ){
+				message+= '...';
+			}
+
+			var error = new Error();
+			error.name = 'AssertionError';
+			error.message = message;
+			throw error;
+		}
+	}
+}
 
 var lines = [
 	{
@@ -86,24 +119,22 @@ var lines = [
 	}
 ];
 
-export function parts(test){
-	var parsePart = function(line){
-		var match = line.source.match(CallSite.regexps.parts);
+function parsePart(line){
+	var match = line.source.match(CallSite.regexps.parts);
 
-		return match ? {site: match[1], location: match[2]} : {site: null, location: null};
-	};
-
-	lines.forEach(function(line){
-		test.compareProperties(line, parsePart(line));
-	});
+	return match ? {site: match[1], location: match[2]} : {site: null, location: null};
 }
 
-export function parseLine(test){
-	var parse = function(line){
-		return CallSite.parseLine(line.source);
-	};
-
-	lines.forEach(function(line){
-		test.compareProperties(parse(line), line.parsed);
-	});
+function parse(line){
+	return CallSite.parseLine(line.source);
 }
+
+lines.forEach(function(line){
+	match(line, parsePart(line));
+});
+
+lines.forEach(function(line){
+	match(parse(line), line.parsed);
+});
+
+console.log('all tests passed');

@@ -3,7 +3,7 @@
   "version": "0.0.9",
   "description": "Help to manipulate error stack trace",
   "scripts": {
-    "test": "test-module"
+    "test": "node ./test/test.js"
   },
   "repository": {
     "type": "git",
