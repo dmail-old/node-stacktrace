@@ -14,9 +14,9 @@ var StackTrace = {
 		}
 
 		if( is(error) ){
-			this.callSites = CallSite.parseStack(error.stack);
-			this.name = error.name;
-			this.message = error.message;
+			this.stack = error.stack;
+			// this.name = error.name;
+			//this.message = error.message;
 			/*
 			if( error.fileName ){
 				Object.defineProperty(this, 'fileName', {value: error.fileName});
@@ -39,6 +39,18 @@ var StackTrace = {
 		var stackTrace = Object.create(this);
 		stackTrace.constructor.apply(stackTrace, arguments);
 		return stackTrace;
+	},
+
+	get stack(){
+		return this.toString();
+	},
+
+	set stack(value){
+		var nameIndex = value.indexOf('Error:') + 'Error:'.length;
+
+		this.name = value.slice(0, nameIndex - 1);
+		this.message = value.slice(nameIndex + 1, value.indexOf('\n'));
+		this.callSites = CallSite.parseStack(value);
 	},
 
 	get fileName(){
@@ -64,6 +76,11 @@ var StackTrace = {
 		this.callSites.forEach(fn, bind);
 	},
 
+	unshift: function(origin){
+		var originCallSite = CallSite.create(origin);
+		this.callSites.unshift(originCallSite);
+	},
+
 	toString: function(){
 		return this.name + ': ' + this.message + this.callSites.map(function(callSite){
 			return '\n\tat ' + String(callSite);
@@ -87,7 +104,15 @@ var properties = {
 	},
 
 	get stack(){
-		return this.stackTrace.toString();
+		return this.stackTrace.stack;
+	},
+
+	set stack(value){
+		this.stackTrace.stack = value;
+	},
+
+	unshift: function(origin){
+		this.stackTrace.unshift(origin);
 	},
 
 	toString: function(){
