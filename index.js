@@ -143,8 +143,16 @@ var properties = {
 
 					if( lineSource ){
 						string+= lineSource;
+
 						if( columnNumber ){
-							string+= '\n' + new Array(columnNumber).join(' ') + '^';
+							string+= '\n';
+							var i = 0, j = columnNumber -1, char;
+							for(;i<j;i++){
+								char = lineSource[i];
+								// keep \t and space but replace others by spaces
+								string+= char === ' ' || char === '\t'  ? char : ' ';
+							}
+							string+= '^';
 						}
 					}
 				}
