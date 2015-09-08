@@ -40,8 +40,8 @@ var lines = [
 		location: null,
 		parsed: {
 			fileName: 'repl',
-			line: 1,
-			column: 1
+			lineNumber: 1,
+			columnNumber: 1
 		}
 	},
 	{
@@ -50,8 +50,8 @@ var lines = [
 		location: 'file with space.js:2108:26',
 		parsed: {
 			functionName: 'ensureEvaluated',
-			line: 2108,
-			column: 26
+			lineNumber: 2108,
+			columnNumber: 26
 		}
 	},
 	{
@@ -61,8 +61,8 @@ var lines = [
 		parsed: {
 			methodName: 'defaultEval',
 			fileName: 'repl.js',
-			line: 132,
-			column: 27
+			lineNumber: 132,
+			columnNumber: 27
 		}
 	},
 	{
@@ -73,8 +73,8 @@ var lines = [
 			methodName: 'runBound',
 			functionName: 'eval',
 			fileName: 'domain.js',
-			line: 267,
-			column: 12
+			lineNumber: 267,
+			columnNumber: 12
 		}
 	},
 	{
@@ -84,7 +84,7 @@ var lines = [
 		parsed: {
 			functionName: 'eval',
 			fileName: 'file.js',
-			line: 4,
+			lineNumber: 4,
 			evalFileName: null,
 			evalLineNumber: 1,
 			evalColumnNumber: 1
