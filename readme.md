@@ -1,4 +1,4 @@
-# StackTrace [![npm version](https://badge.fury.io/js/node-stacktrace.svg)](http://badge.fury.io/js/node-stacktrace) [![Build Status](https://travis-ci.org/dmail/node-stacktrace.svg)](http://travis-ci.org/dmail/node-stacktrace)
+# StackTrace [![npm version](https://badge.fury.io/js/node-stacktrace.svg)](http://badge.fury.io/js/node-stacktrace) [![Build Status](https://travis-ci.org/dmail/node-stacktrace.svg)](http://travis-ci.org/dmail/node-stacktrace) [![coverage](https://codecov.io/github/dmail/node-stacktrace/coverage.svg?branch=master)](https://codecov.io/github/dmail/node-stacktrace?branch=master)
 
 Parse stack from error and help to manipulate it
 
