@@ -3,7 +3,12 @@
   "version": "0.0.9",
   "description": "Help to manipulate error stack trace",
   "scripts": {
-    "test": "node ./test/test.js"
+    "test": "node ./test/test.js",
+    "cover": "istanbul cover ./test/test.js",
+    "ci": "npm run cover && codecov < ./coverage/coverage.json"
+  },
+  "devDependencies": {
+    "codecov.io": "^0.1.2"
   },
   "repository": {
     "type": "git",

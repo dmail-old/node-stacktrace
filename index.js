@@ -88,8 +88,6 @@ var StackTrace = {
 	}
 };
 
-var fs = require('fs');
-
 var properties = {
 	get fileName(){
 		return this.stackTrace.fileName;
