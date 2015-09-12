@@ -15,7 +15,9 @@ var StackTrace = {
 
 		if( is(error) ){
 			this.stack = error.stack;
-			if( error.origin ) this.unshift(error.origin);
+			if( error.origin ){
+				this.unshift(error.origin);
+			}
 			// this.name = error.name;
 			//this.message = error.message;
 			/*
@@ -43,7 +45,9 @@ var StackTrace = {
 	},
 
 	get stack(){
-		return this.toString();
+		return this.callSites.map(function(callSite){
+			return '\n\tat ' + String(callSite);
+		}).join('');
 	},
 
 	set stack(value){
@@ -83,9 +87,7 @@ var StackTrace = {
 	},
 
 	toString: function(){
-		return this.name + ': ' + this.message + this.callSites.map(function(callSite){
-			return '\n\tat ' + String(callSite);
-		}).join('');
+		return this.name + ': ' + this.message + this.stack;
 	}
 };
 
@@ -163,7 +165,7 @@ var properties = {
 
 		//string+= this.name;
 		//string+= ': ' + this.message;
-		string+= this.stack;
+		string+= this.stackTrace.toString();
 
 		return string;
 	}
