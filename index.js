@@ -15,6 +15,7 @@ var StackTrace = {
 
 		if( is(error) ){
 			this.stack = error.stack;
+			if( error.origin ) this.unshift(error.origin);
 			// this.name = error.name;
 			//this.message = error.message;
 			/*
@@ -49,7 +50,7 @@ var StackTrace = {
 		var nameIndex = value.indexOf('Error:') + 'Error:'.length;
 
 		this.name = value.slice(0, nameIndex - 1);
-		this.message = value.slice(nameIndex + 1, value.indexOf('\n'));
+		this.message = value.slice(nameIndex + 1, value.indexOf('\n\tat'));
 		this.callSites = CallSite.parseStack(value);
 	},
 
