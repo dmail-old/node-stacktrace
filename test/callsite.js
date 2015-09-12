@@ -136,5 +136,3 @@ lines.forEach(function(line){
 lines.forEach(function(line){
 	match(parse(line), line.parsed);
 });
-
-console.log('all tests passed');

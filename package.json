@@ -3,8 +3,8 @@
   "version": "0.0.9",
   "description": "Help to manipulate error stack trace",
   "scripts": {
-    "test": "node ./test/test.js",
-    "cover": "istanbul cover ./test/test.js",
+    "test": "node ./test/index.js",
+    "cover": "istanbul cover ./test/index.js",
     "ci": "npm run cover && codecov < ./coverage/coverage.json"
   },
   "devDependencies": {

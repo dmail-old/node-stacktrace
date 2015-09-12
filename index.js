@@ -15,9 +15,11 @@ var StackTrace = {
 
 		if( is(error) ){
 			this.stack = error.stack;
-			if( error.origin ){
+			if( 'origin' in error && typeof error.origin == 'object' ){
 				this.unshift(error.origin);
 			}
+			this.error = error;
+
 			// this.name = error.name;
 			//this.message = error.message;
 			/*
@@ -45,17 +47,53 @@ var StackTrace = {
 	},
 
 	get stack(){
-		return this.callSites.map(function(callSite){
-			return '\n\tat ' + String(callSite);
-		}).join('');
+		var stack = '';
+
+		stack+= this.name;
+		if( this.message ) stack+= ': ' + this.message;
+		stack+= this.callSites.map(function(callSite){ return '\n\tat ' + String(callSite); }).join('');
+
+		return stack;
 	},
 
 	set stack(value){
-		var nameIndex = value.indexOf('Error:') + 'Error:'.length;
+		var nameStartIndex = 0;
+		var nameEndIndex;
+		var messageStartIndex = value.indexOf(': ');
+		var messageEndIndex;
+		var stackIndex = value.indexOf('\n');
+		var endIndex = value.length;
 
-		this.name = value.slice(0, nameIndex - 1);
-		this.message = value.slice(nameIndex + 1, value.indexOf('\n\tat'));
-		this.callSites = CallSite.parseStack(value);
+		if( messageStartIndex === -1 ){
+			if( stackIndex === -1 ){
+				nameEndIndex = endIndex;
+			}
+			else{
+				nameEndIndex = stackIndex;
+			}
+		}
+		else{
+			nameEndIndex = messageStartIndex;
+		}
+
+		this.name = value.slice(nameStartIndex, nameEndIndex);
+		if( messageStartIndex === -1 ){
+			this.message = '';
+		}
+		else{
+			if( stackIndex === -1 ){
+				messageEndIndex = endIndex;
+			}
+			else{
+				messageEndIndex = stackIndex;
+			}
+
+			this.message = value.slice(messageStartIndex + 2, messageEndIndex);
+		}
+
+		var stackSource = value.slice(stackIndex);
+
+		this.callSites = CallSite.parseStack(stackSource);
 	},
 
 	get fileName(){
@@ -84,36 +122,6 @@ var StackTrace = {
 	unshift: function(origin){
 		var originCallSite = CallSite.create(origin);
 		this.callSites.unshift(originCallSite);
-	},
-
-	toString: function(){
-		return this.name + ': ' + this.message + this.stack;
-	}
-};
-
-var properties = {
-	get fileName(){
-		return this.stackTrace.fileName;
-	},
-
-	get lineNumber(){
-		return this.stackTrace.lineNumber;
-	},
-
-	get columnNumber(){
-		return this.stackTrace.columnNumber;
-	},
-
-	get stack(){
-		return this.stackTrace.stack;
-	},
-
-	set stack(value){
-		this.stackTrace.stack = value;
-	},
-
-	unshift: function(origin){
-		this.stackTrace.unshift(origin);
 	},
 
 	toString: function(){
@@ -163,25 +171,60 @@ var properties = {
 			}
 		}
 
-		//string+= this.name;
-		//string+= ': ' + this.message;
-		string+= this.stackTrace.toString();
+		string+= this.stack;
 
 		return string;
+	}
+};
+
+var properties = {
+	get fileName(){
+		return this.stackTrace.fileName;
+	},
+
+	get lineNumber(){
+		return this.stackTrace.lineNumber;
+	},
+
+	get columnNumber(){
+		return this.stackTrace.columnNumber;
+	},
+
+	get stack(){
+		return this.stackTrace.stack;
+	},
+
+	set stack(value){
+		this.stackTrace.stack = value;
+	},
+
+	unshift: function(origin){
+		this.stackTrace.unshift(origin);
+	},
+
+	toString: function(){
+		return this.stackTrace.toString();
 	}
 };
 
 function install(error){
 	var stackTrace;
 
-	stackTrace = StackTrace.create(error);
+	if( is(error) ){
+		if( 'stackTrace' in error ){ // install once
+			stackTrace = error.stackTrace;
+		}
+		else{			
+			stackTrace = StackTrace.create(error);
+			error.stackTrace = stackTrace;
 
-	if( is(error) && false === 'stackTrace' in error ){ // install once
-		error.stackTrace = stackTrace;
-
-		Object.keys(properties).forEach(function(key){
-			Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(properties, key));
-		});
+			Object.keys(properties).forEach(function(key){
+				Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(properties, key));
+			});
+		}
+	}
+	else{
+		stackTrace = StackTrace.create(error);
 	}
 
 	return stackTrace;
