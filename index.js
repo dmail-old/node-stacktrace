@@ -1,5 +1,6 @@
 var fs = require('fs');
-var CallSite = require('./lib/call-site.js');
+var CallSite = require('./lib/callsite.js');
+var parseStack = require('./lib/stack-parse.js');
 
 function is(error){
 	return error && typeof error.stack === 'string';
@@ -57,43 +58,15 @@ var StackTrace = {
 	},
 
 	set stack(value){
-		var nameStartIndex = 0;
-		var nameEndIndex;
-		var messageStartIndex = value.indexOf(': ');
-		var messageEndIndex;
-		var stackIndex = value.indexOf('\n');
-		var endIndex = value.length;
+		var parts = parseStack(value);
 
-		if( messageStartIndex === -1 ){
-			if( stackIndex === -1 ){
-				nameEndIndex = endIndex;
-			}
-			else{
-				nameEndIndex = stackIndex;
-			}
-		}
-		else{
-			nameEndIndex = messageStartIndex;
-		}
+		this.name = parts.name;
+		this.message = parts.message;
+		this.trace = parts.trace;
 
-		this.name = value.slice(nameStartIndex, nameEndIndex);
-		if( messageStartIndex === -1 ){
-			this.message = '';
-		}
-		else{
-			if( stackIndex === -1 ){
-				messageEndIndex = endIndex;
-			}
-			else{
-				messageEndIndex = stackIndex;
-			}
-
-			this.message = value.slice(messageStartIndex + 2, messageEndIndex);
-		}
-
-		var stackSource = value.slice(stackIndex);
-
-		this.callSites = CallSite.parseStack(stackSource);
+		this.callSites = this.trace.split('\n').map(function(line){
+			return CallSite.parse(line);
+		});
 	},
 
 	get fileName(){

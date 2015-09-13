@@ -1,4 +1,4 @@
-var CallSite = require('../lib/call-site.js');
+var parse = require('../lib/callsite-parse.js');
 
 function match(actual, expected){
 	var maxDifferencesLogged = 5;
@@ -36,8 +36,6 @@ function match(actual, expected){
 var lines = [
 	{
 		source: 'at repl:1:1',
-		site: null,
-		location: null,
 		parsed: {
 			fileName: 'repl',
 			lineNumber: 1,
@@ -46,18 +44,15 @@ var lines = [
 	},
 	{
 		source: 'at ensureEvaluated (file with space.js:2108:26)',
-		site: 'at ensureEvaluated',
-		location: 'file with space.js:2108:26',
 		parsed: {
 			functionName: 'ensureEvaluated',
+			fileName: 'file with space.js',
 			lineNumber: 2108,
 			columnNumber: 26
 		}
 	},
 	{
 		source: 'at REPLServer.defaultEval (repl.js:132:27)',
-		site: 'at REPLServer.defaultEval',
-		location: 'repl.js:132:27',
 		parsed: {
 			methodName: 'defaultEval',
 			fileName: 'repl.js',
@@ -67,8 +62,6 @@ var lines = [
 	},
 	{
 		source: 'at REPLServer.runBound [as eval] (domain.js:267:12)',
-		site: 'at REPLServer.runBound [as eval]',
-		location: 'domain.js:267:12',
 		parsed: {
 			methodName: 'runBound',
 			functionName: 'eval',
@@ -119,20 +112,6 @@ var lines = [
 	}
 ];
 
-function parsePart(line){
-	var match = line.source.match(CallSite.regexps.parts);
-
-	return match ? {site: match[1], location: match[2]} : {site: null, location: null};
-}
-
-function parse(line){
-	return CallSite.parseLine(line.source);
-}
-
 lines.forEach(function(line){
-	match(line, parsePart(line));
-});
-
-lines.forEach(function(line){
-	match(parse(line), line.parsed);
+	match(parse(line.source), line.parsed);
 });
