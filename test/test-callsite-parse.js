@@ -43,6 +43,13 @@ var lines = [
 		}
 	},
 	{
+		source: 'at Error (native)',
+		parsed: {
+			functionName: 'Error',
+			fromNative: true,
+		}
+	},
+	{
 		source: 'at ensureEvaluated (file with space.js:2108:26)',
 		parsed: {
 			functionName: 'ensureEvaluated',
