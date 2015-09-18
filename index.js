@@ -158,7 +158,7 @@ var StackTrace = {
 	}
 };
 
-var properties = {
+var errorProperties = {
 	get fileName(){
 		return this.stackTrace.fileName;
 	},
@@ -183,6 +183,20 @@ var properties = {
 		this.stackTrace.unshift(origin);
 	},
 
+	toJSON: function(){
+		var properties = {};
+
+		Object.getOwnPropertyNames(this).filter(function(name){
+			return false === name in errorProperties && false === this.stackTrace.hasOwnProperty(name);
+		}, this).forEach(function(name){
+			properties[name] = this[name];
+		}, this);
+
+		properties.stackTrace = this.stackTrace;
+
+		return properties;
+	},
+
 	toString: function(){
 		return this.stackTrace.toString();
 	}
@@ -199,8 +213,8 @@ function install(error){
 			stackTrace = StackTrace.create(error);
 			error.stackTrace = stackTrace;
 
-			Object.keys(properties).forEach(function(key){
-				Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(properties, key));
+			Object.keys(errorProperties).forEach(function(key){
+				Object.defineProperty(error, key, Object.getOwnPropertyDescriptor(errorProperties, key));
 			});
 		}
 	}
@@ -212,7 +226,7 @@ function install(error){
 }
 
 module.exports = {
-	properties: properties,
+	properties: errorProperties,
 
 	create: function(error){
 		return StackTrace.create(error);
