@@ -97,6 +97,14 @@ var StackTrace = {
 		this.callSites.unshift(originCallSite);
 	},
 
+	toJSON: function(){
+		return {
+			name: this.name,
+			message: this.message,
+			callSites: this.callSites
+		};
+	},
+
 	toString: function(){
 		var string = '';
 		var fileName = this.fileName, lineNumber = this.lineNumber, columnNumber = this.columnNumber;
@@ -187,7 +195,7 @@ function install(error){
 		if( 'stackTrace' in error ){ // install once
 			stackTrace = error.stackTrace;
 		}
-		else{			
+		else{
 			stackTrace = StackTrace.create(error);
 			error.stackTrace = stackTrace;
 
