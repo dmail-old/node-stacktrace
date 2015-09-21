@@ -68,11 +68,11 @@ var lines = [
 		}
 	},
 	{
-		source: 'at REPLServer.runBound [as eval] (domain.js:267:12)',
+		source: 'at REPLServer.runBound [as eval] (C:\\domain.js:267:12)',
 		parsed: {
 			methodName: 'runBound',
 			functionName: 'eval',
-			fileName: 'domain.js',
+			fileName: 'file:///C:/domain.js',
 			lineNumber: 267,
 			columnNumber: 12
 		}
