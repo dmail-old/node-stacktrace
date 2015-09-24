@@ -64,7 +64,7 @@ var StackTrace = {
 		this.message = parts.message;
 		this.trace = parts.trace;
 
-		this.callSites = this.trace.split('\n').map(function(line){
+		this.callSites = this.trace.split('\n').slice(1).map(function(line){
 			return CallSite.parse(line);
 		});
 	},
