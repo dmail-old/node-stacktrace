@@ -225,6 +225,16 @@ function install(error){
 	return stackTrace;
 }
 
+/*
+Object.defineProperty(Error.prototype, 'inspect', {
+	enumerable: false,
+	configurable: true,
+	value: function(){
+		return install(this).toString();
+	}
+});
+*/
+
 module.exports = {
 	properties: errorProperties,
 
