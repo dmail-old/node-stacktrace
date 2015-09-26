@@ -66,7 +66,9 @@ var StackTrace = {
 
 		this.callSites = this.trace.split('\n').slice(1).map(function(line){
 			return CallSite.parse(line);
-		});
+		}).filter(function(callSite){
+			return Object.keys(callSite).length !== 0;
+		}); // filter out empty callSites
 	},
 
 	get fileName(){
@@ -114,9 +116,9 @@ var StackTrace = {
 			string+= '\n';
 			string+= fileName;
 
-			if( lineNumber ){
+			if( lineNumber != null ){
 				string+= ':' + lineNumber;
-				if( columnNumber ) string+= ':' + columnNumber;
+				if( columnNumber != null ) string+= ':' + columnNumber;
 				string+= '\n';
 
 				var filePath;
@@ -134,7 +136,7 @@ var StackTrace = {
 					if( lineSource ){
 						string+= lineSource;
 
-						if( columnNumber ){
+						if( columnNumber != null ){
 							string+= '\n';
 							var i = 0, j = columnNumber -1, char;
 							for(;i<j;i++){

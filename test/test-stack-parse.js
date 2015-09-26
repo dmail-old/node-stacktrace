@@ -9,6 +9,12 @@ var stacks = [
 		trace: '\n\tat repl:1:1'
 	},
 	{
+		string: 'SyntaxError: Unterminated string constant\n\tat file:///C:/Users/Damien/system-test/test/0-introduction.js:1:0',
+		name: 'SyntaxError',
+		message: 'Unterminated string constant',
+		trace: '\n\tat file:///C:/Users/Damien/system-test/test/0-introduction.js:1:0'
+	},
+	{
 		string: 'Error: message\n\tat ensureEvaluated (file with space.js:2108:26)',
 		name: 'Error',
 		message: 'message',
