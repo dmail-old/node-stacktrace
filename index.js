@@ -6,8 +6,45 @@ function is(error){
 	return error && typeof error.stack === 'string';
 }
 
+// https://github.com/v8/v8/wiki/Stack%20Trace%20API
+function getFrameProperties(frame){
+	var methodProperties = {
+		getThis: 'thisValue',
+		isNative: 'fromNative',
+		isConstructor: 'fromConstructor',
+		isToplevel: 'fromTopLevel',
+		isEval: 'fromEval',
+		getFunctionName: 'functionName',
+		getMethodName: 'methodName',
+		getTypeName: 'typeName',
+		getLineNumber: 'lineNumber',
+		getColumnNumber: 'columnNumber',
+		getFileName: 'fileName',
+		getScriptNameOrSourceURL: 'sourceURL',
+	};
+	var properties = {};
+
+	for(var method in methodProperties){
+		if( false === method in frame ){
+			throw new Error(method + ' frame method not found');
+		}
+
+		properties[methodProperties[method]] = frame[method]();
+	}
+
+	if( frame.isEval() ){
+		var evalFrame = frame.getEvalOrigin();
+
+		properties.fileName = evalFrame.getFileName();
+		properties.lineNumber = evalFrame.getLineNumber();
+		properties.columnNumber = evalFrame.getColumnNumber();
+	}
+
+	return properties;
+}
+
 var StackTrace = {
-	constructor: function(error){
+	constructor: function(error, v8CallSites){
 		var callSites;
 
 		if( typeof error === 'string' ){
@@ -15,29 +52,43 @@ var StackTrace = {
 		}
 
 		if( is(error) ){
-			this.stack = error.stack;
-			if( 'origin' in error && typeof error.origin == 'object' ){
-				this.unshift(error.origin);
+			if( v8CallSites ){
+				this.name = error.name;
+				this.message = error.message;
+				this.callSites = v8CallSites.map(function(frame){
+					var properties = getFrameProperties(frame);
+					return CallSite.create(properties);
+				});
 			}
-			this.error = error;
+			else{
+				this.stack = error.stack;
+				if( 'origin' in error && typeof error.origin == 'object' ){
+					this.unshift(error.origin);
+				}
+				this.error = error;
 
-			// this.name = error.name;
-			//this.message = error.message;
-			/*
-			if( error.fileName ){
-				Object.defineProperty(this, 'fileName', {value: error.fileName});
+				// this.name = error.name;
+				//this.message = error.message;
+				/*
+				if( error.fileName ){
+					Object.defineProperty(this, 'fileName', {value: error.fileName});
+				}
+				if( error.lineNumber ){
+					this.lineNumber = error.lineNumber;
+					Object.defineProperty(this, 'lineNumber', {value: error.fileName});
+				}
+				if( error.columnNumber ){
+					this.columnNumber = error.columnNumber;
+				}
+				*/
 			}
-			if( error.lineNumber ){
-				this.lineNumber = error.lineNumber;
-				Object.defineProperty(this, 'lineNumber', {value: error.fileName});
-			}
-			if( error.columnNumber ){
-				this.columnNumber = error.columnNumber;
-			}
-			*/
 		}
 		else{
 			this.callSites = [];
+		}
+
+		if( this.callSiteTransformer ){
+			this.callSites.forEach(this.callSiteTransformer);
 		}
 	},
 
@@ -204,15 +255,17 @@ var errorProperties = {
 	}
 };
 
-function install(error){
+function install(error, v8CallSites){
 	var stackTrace;
 
 	if( is(error) ){
+		var stack = error.stack; // try first to trigger Error.prepareStackTrace
+
 		if( 'stackTrace' in error ){ // install once
 			stackTrace = error.stackTrace;
 		}
 		else{
-			stackTrace = StackTrace.create(error);
+			stackTrace = StackTrace.create(error, v8CallSites);
 			error.stackTrace = stackTrace;
 
 			Object.keys(errorProperties).forEach(function(key){
@@ -237,8 +290,22 @@ Object.defineProperty(Error.prototype, 'inspect', {
 });
 */
 
+function prepareStackTrace(error, stack){
+	var stackTrace = install(error, stack);
+	//return stack;
+	return stackTrace;
+}
+
+if( Error.prepareStackTrace != prepareStackTrace ){
+	Error.prepareStackTrace = prepareStackTrace;
+}
+
 module.exports = {
 	properties: errorProperties,
+
+	setTransformer: function(callSiteTransformer){
+		StackTrace.callSiteTransformer = callSiteTransformer;
+	},
 
 	create: function(error){
 		return StackTrace.create(error);
