@@ -24,13 +24,24 @@ function getFrameProperties(frame){
 	};
 	var properties = {};
 
-	for(var method in methodProperties){
+	Object.keys(methodProperties).forEach(function(method){
 		if( false === method in frame ){
 			throw new Error(method + ' frame method not found');
 		}
 
-		properties[methodProperties[method]] = frame[method]();
-	}
+		var propertyName = methodProperties[method];
+		var frameValue;
+
+		try{
+			frameValue = frame[method]();
+		}
+		catch(e){
+			frameValue = undefined;
+			console.warn('frame method error', e);
+		}
+
+		properties[propertyName] = frameValue;
+	});
 
 	if( frame.isEval() ){
 		var evalFrame = frame.getEvalOrigin();
