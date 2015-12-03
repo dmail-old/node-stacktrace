@@ -37,7 +37,7 @@ function getFrameProperties(frame){
 		}
 		catch(e){
 			frameValue = undefined;
-			console.warn('frame method error', e);
+			//console.warn('frame method error', e);
 		}
 
 		properties[propertyName] = frameValue;
