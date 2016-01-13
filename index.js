@@ -311,6 +311,12 @@ if( Error.prepareStackTrace != prepareStackTrace ){
 	Error.prepareStackTrace = prepareStackTrace;
 }
 
+Error.prototype.toString = function(){
+	return install(this).toString();
+};
+
+Error.prototype.inspect = Error.prototype.toString;
+
 module.exports = {
 	properties: errorProperties,
 
