@@ -3,7 +3,7 @@ var CallSite = require('./lib/callsite.js');
 var parseStack = require('./lib/stack-parse.js');
 
 function is(error){
-	return error && typeof error.stack === 'string';
+	return error && 'stack' in error;
 }
 
 // https://github.com/v8/v8/wiki/Stack%20Trace%20API
@@ -174,6 +174,7 @@ var StackTrace = {
 		var fileName = this.fileName, lineNumber = this.lineNumber, columnNumber = this.columnNumber;
 
 		// Format the line from the original source code like node does
+
 		if( fileName ){
 			string+= '\n';
 			string+= fileName;
@@ -206,7 +207,7 @@ var StackTrace = {
 								// keep \t and space but replace others by spaces
 								string+= char === ' ' || char === '\t'  ? char : ' ';
 							}
-							string+= '^';
+							string+= '^\n';
 						}
 					}
 				}
@@ -235,13 +236,17 @@ var errorProperties = {
 		return this.stackTrace.columnNumber;
 	},
 
+	/*
 	get stack(){
 		return this.stackTrace.stack;
 	},
+	*/
 
+	/*
 	set stack(value){
 		this.stackTrace.stack = value;
 	},
+	*/
 
 	unshift: function(origin){
 		this.stackTrace.unshift(origin);
@@ -270,7 +275,7 @@ function install(error, v8CallSites){
 	var stackTrace;
 
 	if( is(error) ){
-		var stack = error.stack; // try first to trigger Error.prepareStackTrace
+		var stack = error.stack; // trigger Error.prepareStackTrace
 
 		if( 'stackTrace' in error ){ // install once
 			stackTrace = error.stackTrace;
@@ -291,19 +296,8 @@ function install(error, v8CallSites){
 	return stackTrace;
 }
 
-/*
-Object.defineProperty(Error.prototype, 'inspect', {
-	enumerable: false,
-	configurable: true,
-	value: function(){
-		return install(this).toString();
-	}
-});
-*/
-
 function prepareStackTrace(error, stack){
 	var stackTrace = install(error, stack);
-	//return stack;
 	return stackTrace;
 }
 
@@ -315,7 +309,9 @@ Error.prototype.toString = function(){
 	return install(this).toString();
 };
 
-Error.prototype.inspect = Error.prototype.toString;
+Error.prototype.inspect = function(){
+	return install(this).toString();
+};
 
 module.exports = {
 	properties: errorProperties,
