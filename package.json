@@ -1,5 +1,5 @@
 {
-  "name": "node-stacktrace",
+  "name": "@dmail/node-stacktrace",
   "version": "0.0.9",
   "description": "Help to manipulate error stack trace",
   "license": "UNLICENSED",
