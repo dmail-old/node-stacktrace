@@ -1,6 +1,6 @@
-var fs = require('fs');
-var CallSite = require('./lib/callsite.js');
-var parseStack = require('./lib/stack-parse.js');
+import fs from 'node/fs';
+import CallSite from './lib/callsite.js';
+import parseStack from './lib/stack-parse.js';
 
 function is(error) {
     return error && 'stack' in error;
@@ -42,8 +42,7 @@ function getFrameProperties(frame) {
         properties[propertyName] = frameValue;
     });
 
-    /*
-    if (frame.isEval()) {
+    if (false && frame.isEval()) {
         var evalFrame = frame.getEvalOrigin();
 
         console.log('-----', evalFrame, Object.keys(evalFrame));
@@ -52,7 +51,6 @@ function getFrameProperties(frame) {
         properties.lineNumber = evalFrame.getLineNumber();
         properties.columnNumber = evalFrame.getColumnNumber();
     }
-    */
 
     return properties;
 }
@@ -80,18 +78,16 @@ var StackTrace = {
 
                 // this.name = error.name;
                 // this.message = error.message;
-                /*
-                if( error.fileName ){
-                    Object.defineProperty(this, 'fileName', {value: error.fileName});
-                }
-                if( error.lineNumber ){
-                    this.lineNumber = error.lineNumber;
-                    Object.defineProperty(this, 'lineNumber', {value: error.fileName});
-                }
-                if( error.columnNumber ){
-                    this.columnNumber = error.columnNumber;
-                }
-                */
+                // if( error.fileName ){
+                //     Object.defineProperty(this, 'fileName', {value: error.fileName});
+                // }
+                // if( error.lineNumber ){
+                //    this.lineNumber = error.lineNumber;
+                //     Object.defineProperty(this, 'lineNumber', {value: error.fileName});
+                // }
+                // if( error.columnNumber ){
+                //     this.columnNumber = error.columnNumber;
+                // }
             }
         } else {
             this.callSites = [];
@@ -140,12 +136,10 @@ var StackTrace = {
         return this.callSites[0] ? this.callSites[0].getFileName() : null;
     },
 
-    /*
-    set fileName(value){
-        if( !this.calllSites[0] ) this.callSites[0] = CallSite.create();
-        this.calllSites[0].fileName = value;
-    },
-    */
+    // set fileName(value){
+    //     if( !this.calllSites[0] ) this.callSites[0] = CallSite.create();
+    //     this.calllSites[0].fileName = value;
+    // },
 
     get lineNumber() {
         return this.callSites[0] ? this.callSites[0].getLineNumber() : null;
@@ -243,17 +237,13 @@ var errorProperties = {
         return this.stackTrace.columnNumber;
     },
 
-    /*
-    get stack(){
-        return this.stackTrace.stack;
-    },
-    */
+    // get stack(){
+    //     return this.stackTrace.stack;
+    // },
 
-    /*
-    set stack(value){
-        this.stackTrace.stack = value;
-    },
-    */
+    // set stack(value){
+    //     this.stackTrace.stack = value;
+    // },
 
     unshift: function(origin) {
         this.stackTrace.unshift(origin);
@@ -311,17 +301,15 @@ if (Error.prepareStackTrace !== prepareStackTrace) {
     Error.prepareStackTrace = prepareStackTrace;
 }
 
-/* eslint-disable no-extend-native */
-Error.prototype.toString = function() {
+Error.prototype.toString = function() { // eslint-disable-line no-extend-native
     return install(this).toString();
 };
 
-Error.prototype.inspect = function() {
+Error.prototype.inspect = function() { // eslint-disable-line no-extend-native
     return install(this).toString();
 };
-/* eslint-enable no-extend-native */
 
-module.exports = {
+export default {
     properties: errorProperties,
 
     setTransformer: function(callSiteTransformer) {
