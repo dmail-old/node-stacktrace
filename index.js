@@ -298,7 +298,9 @@ function prepareStackTrace(error, stack) {
     return stackTrace;
 }
 
+var oldPrepareStackTrace;
 if (Error.prepareStackTrace !== prepareStackTrace) {
+    oldPrepareStackTrace = Error.prepareStackTrace;
     Error.prepareStackTrace = prepareStackTrace;
 }
 
@@ -315,6 +317,10 @@ export default {
 
     setTransformer: function(callSiteTransformer) {
         StackTrace.callSiteTransformer = callSiteTransformer;
+    },
+
+    ondemand: function() {
+        Error.prepareStackTrace = oldPrepareStackTrace;
     },
 
     create: function(error) {
