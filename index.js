@@ -1,6 +1,7 @@
-import fs from 'node/fs';
 import CallSite from './lib/callsite.js';
 import parseStack from './lib/stack-parse.js';
+
+var fs = System._nodeRequire('fs');
 
 function is(error) {
     return error && 'stack' in error;
