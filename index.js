@@ -294,7 +294,7 @@ function install(error, v8CallSites) {
 
 function prepareStackTrace(error, stack) {
     var stackTrace = install(error, stack);
-    return stackTrace;
+    return String(stackTrace);
 }
 
 var oldPrepareStackTrace;
